@@ -595,6 +595,11 @@ locals {
   service_pass_role_policy_name = coalesce(var.service_pass_role_policy_name, "${var.name}-passrole")
 }
 
+data "aws_iam_role" "instance_profile" {
+  count = local.create_service_iam_role ? 1 : 0
+  name = var.ec2_attributes.instance_profile
+}
+
 # https://repost.aws/questions/QUIa9mU4AqRdqikEcl0piZQg/emr-default-role-has-insufficient-ec-2-permissions
 data "aws_iam_policy_document" "service_pass_role" {
   count = local.create_service_iam_role ? 1 : 0
@@ -605,7 +610,7 @@ data "aws_iam_policy_document" "service_pass_role" {
 
     resources = compact([
       try(aws_iam_role.autoscaling[0].arn, ""),
-      try(aws_iam_role.instance_profile[0].arn, var.ec2_attributes.instance_profile, ""),
+      try(aws_iam_role.instance_profile[0].arn, data.aws_iam_role.instance_profile[0].arn, ""),
     ])
 
     condition {

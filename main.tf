@@ -605,7 +605,7 @@ data "aws_iam_policy_document" "service_pass_role" {
 
     resources = compact([
       try(aws_iam_role.autoscaling[0].arn, ""),
-      try(aws_iam_role.instance_profile[0].arn, ""),
+      try(aws_iam_role.instance_profile[0].arn, var.ec2_attributes.instance_profile, ""),
     ])
 
     condition {

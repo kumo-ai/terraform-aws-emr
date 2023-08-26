@@ -649,7 +649,7 @@ resource "aws_iam_role_policy_attachment" "service_pass_role" {
 
 locals {
   create_iam_instance_profile = var.create && var.create_iam_instance_profile
-  create_iam_instance_profile_role = local.create_iam_instance_profile && (var.iam_instance_profile_role_name != null)
+  create_iam_instance_profile_role = local.create_iam_instance_profile && (var.iam_instance_profile_role_name == null)
   iam_instance_profile_name   = coalesce(var.iam_instance_profile_name, "${var.name}-instance")
 }
 

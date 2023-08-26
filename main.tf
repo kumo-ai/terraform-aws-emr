@@ -649,7 +649,7 @@ resource "aws_iam_role_policy_attachment" "service_pass_role" {
 
 locals {
   create_iam_instance_profile = var.create && var.create_iam_instance_profile
-  create_iam_instance_profile_role = local.create_iam_instance_profile && (var.iam_instance_profile_role_name == null)
+  create_iam_instance_profile_role = local.create_iam_instance_profile && var.iam_instance_profile_role_name == null
   iam_instance_profile_name   = coalesce(var.iam_instance_profile_name, "${var.name}-instance")
 }
 
@@ -692,7 +692,7 @@ resource "aws_iam_role_policy_attachment" "instance_profile" {
 resource "aws_iam_instance_profile" "this" {
   count = local.create_iam_instance_profile ? 1 : 0
 
-  role = coalesce(var.iam_instance_profile_role_name, aws_iam_role.instance_profile[0].name)
+  role = try(var.iam_instance_profile_role_name, aws_iam_role.instance_profile[0].name, "")
 
   name        = var.iam_role_use_name_prefix ? null : local.iam_instance_profile_name
   name_prefix = var.iam_role_use_name_prefix ? "${local.iam_instance_profile_name}-" : null

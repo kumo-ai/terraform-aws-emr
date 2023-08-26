@@ -347,6 +347,12 @@ variable "create_iam_instance_profile" {
   default     = true
 }
 
+variable "iam_instance_profile_role_name" {
+  description = "Name of the existing role to attach to the EC2 IAM instance profile created"
+  type        = string
+  default     = null
+}
+
 variable "iam_instance_profile_name" {
   description = "Name to use on EC2 IAM role/instance profile created"
   type        = string

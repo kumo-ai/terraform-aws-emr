@@ -595,9 +595,10 @@ locals {
   service_pass_role_policy_name = coalesce(var.service_pass_role_policy_name, "${var.name}-passrole")
 }
 
-data "aws_iam_role" "instance_profile" {
-  count = local.create_service_iam_role ? 1 : 0
-  name = var.ec2_attributes.instance_profile
+data aws_iam_role "instance_profile" {
+  count = var.iam_instance_profile_role_name != null ? 1 : 0
+
+  name = var.iam_instance_profile_role_name
 }
 
 # https://repost.aws/questions/QUIa9mU4AqRdqikEcl0piZQg/emr-default-role-has-insufficient-ec-2-permissions
@@ -648,11 +649,12 @@ resource "aws_iam_role_policy_attachment" "service_pass_role" {
 
 locals {
   create_iam_instance_profile = var.create && var.create_iam_instance_profile
+  create_iam_instance_profile_role = local.create_iam_instance_profile && var.iam_instance_profile_role_name != null
   iam_instance_profile_name   = coalesce(var.iam_instance_profile_name, "${var.name}-instance")
 }
 
 data "aws_iam_policy_document" "instance_profile" {
-  count = local.create_iam_instance_profile ? 1 : 0
+  count = local.create_iam_instance_profile_role ? 1 : 0
 
   statement {
     sid     = "EC2AssumeRole"
@@ -666,7 +668,7 @@ data "aws_iam_policy_document" "instance_profile" {
 }
 
 resource "aws_iam_role" "instance_profile" {
-  count = local.create_iam_instance_profile ? 1 : 0
+  count = local.create_iam_instance_profile_role ? 1 : 0
 
   name        = var.iam_role_use_name_prefix ? null : local.iam_instance_profile_name
   name_prefix = var.iam_role_use_name_prefix ? "${local.iam_instance_profile_name}-" : null
@@ -681,7 +683,7 @@ resource "aws_iam_role" "instance_profile" {
 }
 
 resource "aws_iam_role_policy_attachment" "instance_profile" {
-  for_each = { for k, v in var.iam_instance_profile_policies : k => v if local.create_iam_instance_profile }
+  for_each = { for k, v in var.iam_instance_profile_policies : k => v if local.create_iam_instance_profile_role }
 
   policy_arn = each.value
   role       = aws_iam_role.instance_profile[0].name
@@ -690,7 +692,7 @@ resource "aws_iam_role_policy_attachment" "instance_profile" {
 resource "aws_iam_instance_profile" "this" {
   count = local.create_iam_instance_profile ? 1 : 0
 
-  role = aws_iam_role.instance_profile[0].name
+  role = coalesce(var.iam_instance_profile_role_name, aws_iam_role.instance_profile[0].name)
 
   name        = var.iam_role_use_name_prefix ? null : local.iam_instance_profile_name
   name_prefix = var.iam_role_use_name_prefix ? "${local.iam_instance_profile_name}-" : null

@@ -596,7 +596,7 @@ locals {
 }
 
 data aws_iam_role "instance_profile" {
-  count = var.iam_instance_profile_role_name != null ? 1 : 0
+  count = (var.iam_instance_profile_role_name != null && var.iam_instance_profile_role_arn == null) ? 1 : 0
 
   name = var.iam_instance_profile_role_name
 }
@@ -611,7 +611,7 @@ data "aws_iam_policy_document" "service_pass_role" {
 
     resources = compact([
       try(aws_iam_role.autoscaling[0].arn, ""),
-      try(aws_iam_role.instance_profile[0].arn, data.aws_iam_role.instance_profile[0].arn, ""),
+      try(aws_iam_role.instance_profile[0].arn, data.aws_iam_role.instance_profile[0].arn, var.iam_instance_profile_role_arn, ""),
     ])
 
     condition {

@@ -359,6 +359,13 @@ variable "iam_instance_profile_role_arn" {
   default     = null
 }
 
+variable "detect_iam_role_arn" {
+  description = "Determines whether the IAM role ARN should be detected from the `iam_instance_profile_role_name` or `iam_instance_profile_role_arn`"
+  type        = bool
+  default     = true
+}
+
+
 variable "iam_instance_profile_name" {
   description = "Name to use on EC2 IAM role/instance profile created"
   type        = string

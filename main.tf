@@ -596,7 +596,7 @@ locals {
 }
 
 data aws_iam_role "instance_profile" {
-  count = (var.iam_instance_profile_role_name != null && var.iam_instance_profile_role_arn == null) ? 1 : 0
+  count = var.detect_iam_role_arn ? 1 : 0
 
   name = var.iam_instance_profile_role_name
 }

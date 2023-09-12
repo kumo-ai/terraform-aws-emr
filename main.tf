@@ -273,7 +273,7 @@ resource "aws_emr_cluster" "this" {
   }
 
   name                   = var.name
-  release_label          = try(coalesce(var.release_label, element(data.aws_emr_release_labels.this[0].release_labels, 0)), "")
+  release_label          = var.release_label != null ? var.release_label: try(coalesce(element(data.aws_emr_release_labels.this[0].release_labels, 0)), "")
   scale_down_behavior    = var.scale_down_behavior
   security_configuration = var.create_security_configuration ? aws_emr_security_configuration.this[0].name : var.security_configuration_name
   service_role           = local.create_service_iam_role ? aws_iam_role.service[0].arn : var.service_iam_role_arn

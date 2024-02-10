@@ -79,7 +79,7 @@ resource "aws_emr_cluster" "this" {
 */
 
             content {
-              size                 = ebs_config.value.size
+              size                 = 250
               type                 = ebs_config.value.type
             }
 /*

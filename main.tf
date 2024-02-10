@@ -76,11 +76,17 @@ resource "aws_emr_cluster" "this" {
             for_each = try(instance_type_configs.value.ebs_config, [])
 
             content {
+              size                 = ebs_config.value.size
+              type                 = ebs_config.value.type
+            }
+/*
+            content {
               iops                 = try(ebs_config.value.iops, null)
               size                 = try(ebs_config.value.size, 64)
               type                 = try(ebs_config.value.type, "gp3")
               volumes_per_instance = try(ebs_config.value.volumes_per_instance, null)
             }
+*/
           }
 
           instance_type     = instance_type_configs.value.instance_type

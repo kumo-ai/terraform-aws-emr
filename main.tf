@@ -73,7 +73,10 @@ resource "aws_emr_cluster" "this" {
           }
 
           dynamic "ebs_config" {
+            for_each = instance_type_configs.value.ebs_config
+/*
             for_each = try(instance_type_configs.value.ebs_config, [])
+*/
 
             content {
               size                 = ebs_config.value.size
